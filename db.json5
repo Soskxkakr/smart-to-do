@@ -1,13 +1,14 @@
 {
-  "posts": [
-    { "id": "1", "title": "a title", "views": 100 },
-    { "id": "2", "title": "another title", "views": 200 }
-  ],
-  "comments": [
-    { "id": "1", "text": "a comment about post 1", "postId": "1" },
-    { "id": "2", "text": "another comment about post 1", "postId": "1" }
-  ],
-  "profile": {
-    "name": "typicode"
-  }
+  "tasks": [
+    { "id": "1", "title": "Setup project structure", "status": "completed", "dependencies": [] },
+    { "id": "2", "title": "Design database schema", "status": "completed", "dependencies": ["1"] },
+    { "id": "3", "title": "Implement user authentication", "status": "in-progress", "dependencies": ["2"] },
+    { "id": "4", "title": "Create API endpoints", "status": "pending", "dependencies": ["2"] },
+    { "id": "5", "title": "Build frontend components", "status": "in-progress", "dependencies": ["3", "4"] },
+    { "id": "6", "title": "Write unit tests", "status": "pending", "dependencies": ["4"] },
+    { "id": "7", "title": "Implement data validation", "status": "pending", "dependencies": ["4"] },
+    { "id": "8", "title": "Setup CI/CD pipeline", "status": "pending", "dependencies": ["6"] },
+    { "id": "9", "title": "Performance optimization", "status": "pending", "dependencies": ["5", "7"] },
+    { "id": "10", "title": "Deploy to production", "status": "pending", "dependencies": ["8", "9"] }
+  ]
 }
