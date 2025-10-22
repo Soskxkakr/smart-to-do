@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, CheckSquare } from "lucide-react";
-import { type Task, type TaskState } from "../types";
-import { TaskCard } from "@/components/TaskCard";
+import { clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+import { type Task, type TaskState } from "@/types";
 import { getTasks, patchTask } from "@/api/client";
 import { useToast } from "@/hooks/useToast";
 import { TaskClass } from "@/class/Task";
+import { TaskCard } from "@/components/TaskCard";
+import { Button } from "@/components/ui/button";
 
 export default function Tasks() {
   const [selectedFilter, setSelectedFilter] = useState<TaskState | 'all'>('all');
@@ -17,7 +20,6 @@ export default function Tasks() {
     queryFn: getTasks
   });
 
-  // Batch update mutation for handling multiple task updates
   const batchUpdateMutation = useMutation({
     mutationFn: async (updates: { id: string; task: Task }[]) => {
       const promises = updates.map(({ id, task }) => patchTask(id, task));
@@ -84,10 +86,6 @@ export default function Tasks() {
     }
   };
 
-  useEffect(() => {
-    console.log(updatedTasks)
-  }, [updatedTasks])
-
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -106,20 +104,35 @@ export default function Tasks() {
             </p>
           </div>
 
+          <div className="flex flex-wrap gap-2 mb-4">
+            {Object.keys(taskCounts).map(filter => 
+              <Button
+                key={filter}
+                variant={selectedFilter === filter ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFilter(filter as TaskState | 'all')}
+                className={twMerge(
+                  clsx(
+                    'transition-all',
+                    selectedFilter === filter && 'shadow-sm'
+                  )
+                )}
+              >
+                {filter.charAt(0).toUpperCase() + filter.slice(1).replace('_', ' ')} ({taskCounts[filter as keyof typeof taskCounts]})
+              </Button>
+            )}
+          </div>
+
           {isLoading ? (
-            <div
-              className="flex items-center justify-center py-16"
-            >
+            <div className="flex items-center justify-center py-16">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : filteredTasks.length === 0 ? (
-            <div
-              className="text-center py-16"
-            >
+            <div className="text-center py-16">
               <p className="text-muted-foreground text-sm">
                 {selectedFilter === 'all'
                   ? 'No tasks yet. Tasks will appear here when created.'
-                  : `No tasks with state "${selectedFilter}"`}
+                  : `No tasks with state "${selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1).replace('_', ' ')}"`}
               </p>
             </div>
           ) : (

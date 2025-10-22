@@ -63,10 +63,8 @@ export class TaskClass {
       throw new Error('Cannot change state of blocked task');
     }
 
-    // Apply the state change
     task.state = newState;
 
-    // Propagate changes to dependent tasks
     this.propagateChanges([taskId]);
 
     return Array.from(this.tasks.values());
@@ -95,19 +93,15 @@ export class TaskClass {
         const wasActionable = dependent.state !== 'blocked';
         const isNowActionable = this.isActionable(dependentId);
 
-        // Rule: If task becomes blocked, set to 'blocked'
         if (!isNowActionable && wasActionable) {
           dependent.state = 'blocked';
           queue.push(dependentId);
         }
-        // Rule: If task becomes actionable and is blocked, set to 'todo'
         else if (isNowActionable && dependent.state === 'blocked') {
           dependent.state = 'todo';
           queue.push(dependentId);
         }
-        // If dependencies changed but task remains actionable, check if it needs update
         else if (wasActionable && isNowActionable) {
-          // Task remains actionable, propagate to its dependents anyway
           queue.push(dependentId);
         }
       }
