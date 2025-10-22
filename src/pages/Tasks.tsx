@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, CheckSquare } from "lucide-react";
 import { clsx } from "clsx"
@@ -25,20 +25,12 @@ export default function Tasks() {
       const promises = updates.map(({ id, task }) => patchTask(id, task));
       return Promise.all(promises);
     },
-    onSuccess: (results, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-
-      if (variables.length > 1) {
-        toast({
-          title: "Batch update completed",
-          description: `${variables.length} tasks updated successfully`,
-        });
-      } else if (variables.length === 1) {
-        toast({
-          title: "Task updated",
-          description: `State changed successfully`,
-        });
-      }
+      toast({
+        title: "Update successful",
+        description: "Task updated successfully.",
+      });
     },
     onError: () => {
       toast({
@@ -78,7 +70,7 @@ export default function Tasks() {
 
   const handleStateChange = (taskId: string, newState: TaskState) => {
     const task = tasks.find(t => t.id === taskId);
-    
+
     if (task) {
       const model = new TaskClass(tasks);
       const updatedTasks = model.updateTaskState(taskId, newState).map(t => ({ id: t.id, task: t }));
@@ -105,7 +97,7 @@ export default function Tasks() {
           </div>
 
           <div className="flex flex-wrap gap-2 mb-4">
-            {Object.keys(taskCounts).map(filter => 
+            {Object.keys(taskCounts).map(filter =>
               <Button
                 key={filter}
                 variant={selectedFilter === filter ? 'default' : 'outline'}
